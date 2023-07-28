@@ -119,15 +119,3 @@ Selers page My orders
 Seler admin console
 
 
-
-Certainly! For an e-commerce app, you can consider the Sanskrit name:
-
-"व्यापारिन्" (Vyāpārin)
-"व्यापारसूर्या" (Vyapārasūryā)
-"व्यापारयन्त्र" (Vyāpārayantra)
-"व्यापारवाहिनी" (Vyāpāravāhinī)
-"व्यवसायसौध" (Vyavasāyasaudha)
-"पुस्तकारम्भ" (Pustakārambha)
-pustkalya
-puskatbhandar
-

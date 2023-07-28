@@ -1,26 +1,17 @@
 require("dotenv").config();
 const express = require("express");
-// const {userRouter} = require("./routes/userRouter")
-const session = require('express-session');
+const {userRouter} = require("./routes/userRouter")
 
 const cors = require("cors");
-const {connection} = require("./config/db")
+const {connection} = require("./configs/db")
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(session({
-    secret: process.env.expressSectionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 10 * 60 * 1000
-    }
-}));
 
 
 //routes
-// app.use("/user",userRouter);
+app.use("/user",userRouter);
 
 
 app.get("/",(req,res)=>{
