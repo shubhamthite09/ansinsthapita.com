@@ -1,6 +1,6 @@
 const express = require('express');
-const { registerNewUser,loginUser,uploadAvatar,getAvatar,changeAvatar,changePassword,getOTP,resetPassword,updateUserDetails } = require("../controllers/userControllers");
-const {fileUpload} = require("../../middlewares/avatar/avatarUpload");
+const { registerNewUser,loginUser,uploadAvatar,getAvatar,changeAvatar,changePassword,updateUserDetails,verifyUser } = require("../controllers/userControllers/user");
+const {fileUpload} = require("../middlewares/avatar/avatarUpload");
 const userRouter = express.Router();
 userRouter.use(express.json());
 
@@ -10,9 +10,8 @@ userRouter.post("/uploadAvatar",fileUpload.single('image'), uploadAvatar);
 userRouter.get("/getAvatar/:imageName", getAvatar);
 userRouter.patch("/changeAvatar/:id", changeAvatar);
 userRouter.patch("/changePassword", changePassword);
-userRouter.patch("/resetPassword", resetPassword);
 userRouter.patch("/updateUserDetails/:id", updateUserDetails);
-userRouter.post("/getOTP", getOTP);
+userRouter.patch("/verifyUser", verifyUser);
 
 module.exports={
     userRouter

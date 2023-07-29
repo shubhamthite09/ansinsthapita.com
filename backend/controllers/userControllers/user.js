@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
+const {sendEmail} = require("../../utils/Notifications/EmailSend");
+const {welcomeEmailTemplate} = require("../../utils/EmailTempletes/welcomeEmail");
+const { passwordChange } = require("../../utils/EmailTempletes/passwordChange");
 
 const registerNewUser = async(req,res) =>{
     try{
@@ -12,6 +15,10 @@ const registerNewUser = async(req,res) =>{
             req.body.password = await bcrypt.hash(req.body.password,process.env.hashingSolt);
             let newUser = new userModel(req.body);
             await newUser.save();
+            let subject = "Welcome to ansinsthapita.com"
+            //verification link pending
+            let html  = welcomeEmailTemplate(req.body.name,"#");
+            let temp = await sendEmail(req.body.email,subject,"",html);
             res.status(201).send({isError: false,Msg:"User registered successfully"});
         }else{
             res.status(403).send({isError: true,Msg:"Email is already registered"});
@@ -86,40 +93,24 @@ const changePassword = async(req, res) => {
         let hashedpassword = await bcrypt.hash(password,process.env.hashingSolt);
         const {id} = req.params;
         await userModel.findByIdAndUpdate({_id:id},{password: hashedpassword});
+        let subject = "Password Changed Successfully!"
+        let html  = passwordChange(req.body.name,"#");
+        let temp = await sendEmail(req.body.email,subject,"",html);
         res.status(201).send({isError: false,Msg:"Photo Updated successfully"});
     }catch(err){
         res.status(500).send({isError: true,Msg: err.message});
     }
 }
 
-const getOTP = async(req, res) => {
+const verifyUser = async(req, res) => {
     try{
-        let {email} = req.body;
-        const isAlreadyRegistered = await userModel.findOne({email});
-        if(isAlreadyRegistered){
-            const userOTP = await generateOTP();
-            req.session.otp = userOTP;
-            req.session.user = isAlreadyRegistered.email;
-            //email send here;
-            res.status(201).send({isError: false,Msg:`OTP send to your email`});
+        let {token} = req.query;
+        const userInfo = await jwt.verify(token,process.env.jwtSecret);
+        if(!userInfo){
+            res.status(403).send("Email is not registered");
         }else{
-            res.status(403).send({isError: true,Msg:"Email is not registered"});
-        }
-    }catch(err){
-        res.status(500).send({isError: true,Msg: err.message});
-    }
-}
-
-const resetPassword = async(req,res)=>{
-    try{
-        let {password,email,otp} = req.body;
-        if(req.session.user == email && req.session.otp == otp){
-            let hashedpassword = await bcrypt.hash(password,process.env.hashingSolt);
-            const {id} = req.params;
-            await userModel.findByIdAndUpdate({_id:id},{password: hashedpassword});
-            res.status(201).send({isError: false,Msg:"Photo Updated successfully"});
-        }else{
-            res.status(404).send({isError: true,Msg:"OTP is wrong"});
+            await userModel.findByIdAndUpdate({_id:userInfo.id},{isVerified:true});
+            res.status(200).send("verify successfully you can close the tab");
         }
     }catch(err){
         res.status(500).send({isError: true,Msg: err.message});
@@ -127,5 +118,5 @@ const resetPassword = async(req,res)=>{
 }
 
 module.exports={
-    registerNewUser,loginUser,uploadAvatar,getAvatar,changeAvatar,changePassword,getOTP,resetPassword,updateUserDetails
+    registerNewUser,loginUser,uploadAvatar,getAvatar,changeAvatar,changePassword,updateUserDetails,verifyUser
 }

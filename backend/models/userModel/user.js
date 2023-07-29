@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
         mobile:{type: Number, required: true},
     }],
     avatar:{type: String, required: true},
+    isVerified:{type: Boolean, required: false},
 })
 
 const userModel = mongoose.model('user',userSchema);
