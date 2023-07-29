@@ -1,6 +1,6 @@
 const express = require('express');
 const { registerNewUser,loginUser,uploadAvatar,getAvatar,changeAvatar,changePassword,updateUserDetails,verifyUser, googleAuth } = require("../controllers/userControllers/user");
-const { passport } = require("../config/google.auth");
+const { passport } = require("../middlewares/googleAuth/googlePassport");
 const {fileUpload} = require("../middlewares/avatar/avatarUpload");
 const userRouter = express.Router();
 userRouter.use(express.json());
