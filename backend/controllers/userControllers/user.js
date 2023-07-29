@@ -117,6 +117,27 @@ const verifyUser = async(req, res) => {
     }
 }
 
+const googleAuth = async(req, res) => {
+    try{
+        const isPresent = await userModle.findOne({ email: req.user.email });
+        if (isPresent) {
+            const token = jwt.sign({id:isPresent._id,role:isPresent.role},process.env.jwtSecret)
+                    res.status(202).send({msg:`login done`})
+                    res.redirect(`${process.env.redirectFrontendURL}/chatpage.html?&id=${isPresent._id}&myName=${isPresent.name}&role=${isPresent.role}&token=${token}`)
+        } else {
+            req.user.password = bcrypt.hashSync(req.user.password, 2);
+            const user = new userModle(req.user);
+            await user.save();
+            const isPresent = await userModle.findOne({ email: req.user.email });
+            const token = jwt.sign({id:isPresent._id,role:isPresent.role},process.env.jwtSecret)
+                    res.status(202).send({msg:`login done`})
+                    res.redirect(`${process.env.redirectFrontendURL}/chatpage.html?&id=${isPresent._id}&myName=${isPresent.name}&role=${isPresent.role}&token=${token}`)
+        }
+    }catch(err){
+        res.status(500).send({isError: true,Msg: err.message});
+    }
+}
+
 module.exports={
-    registerNewUser,loginUser,uploadAvatar,getAvatar,changeAvatar,changePassword,updateUserDetails,verifyUser
+    registerNewUser,loginUser,uploadAvatar,getAvatar,changeAvatar,changePassword,updateUserDetails,verifyUser,googleAuth
 }
