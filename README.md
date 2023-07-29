@@ -1,4 +1,4 @@
-# Amezone
+# Ansinsthapita
 
 system design
 
