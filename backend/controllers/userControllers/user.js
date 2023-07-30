@@ -45,7 +45,7 @@ const loginUser = async(req,res)=> {
         if(isAlreadyRegistered){
             const isPasswordCorrect = await bcrypt.compare(password, isAlreadyRegistered.password);
             if(isPasswordCorrect){
-                let token = jwt.sign({userId: isAlreadyRegistered._id},process.env.jwtSecret);
+                let token = jwt.sign({userId: isAlreadyRegistered._id,email:isAlreadyRegistered.email,name:isAlreadyRegistered.name,role:isAlreadyRegistered.role},process.env.jwtSecret);
                 res.status(201).send({isError: false,Msg:"User login successfully",Token: token,Name: isAlreadyRegistered.name});
             }else{
                 res.status(403).send({isError: true,Msg:"Wrong credentials"});
@@ -121,17 +121,17 @@ const googleAuth = async(req, res) => {
     try{
         const isPresent = await userModle.findOne({ email: req.user.email });
         if (isPresent) {
-            const token = jwt.sign({id:isPresent._id,role:isPresent.role},process.env.jwtSecret)
+            const token = jwt.sign({userId:isPresent._id,role:isPresent.role,email:isPresent.email,name:isPresent.name},process.env.jwtSecret)
                     res.status(202).send({msg:`login done`})
-                    res.redirect(`${process.env.redirectFrontendURL}/chatpage.html?&id=${isPresent._id}&myName=${isPresent.name}&role=${isPresent.role}&token=${token}`)
+                    res.redirect(`${process.env.redirectFrontendURL}?&id=${isPresent._id}&name=${isPresent.name}&role=${isPresent.role}&token=${token}`)
         } else {
             req.user.password = bcrypt.hashSync(req.user.password, 2);
             const user = new userModle(req.user);
             await user.save();
             const isPresent = await userModle.findOne({ email: req.user.email });
-            const token = jwt.sign({id:isPresent._id,role:isPresent.role},process.env.jwtSecret)
+            const token = jwt.sign({userId:isPresent._id,role:isPresent.role,email:isPresent.email,name:isPresent.name},process.env.jwtSecret)
                     res.status(202).send({msg:`login done`})
-                    res.redirect(`${process.env.redirectFrontendURL}/chatpage.html?&id=${isPresent._id}&myName=${isPresent.name}&role=${isPresent.role}&token=${token}`)
+                    res.redirect(`${process.env.redirectFrontendURL}?&id=${isPresent._id}&name=${isPresent.name}&role=${isPresent.role}&token=${token}`)
         }
     }catch(err){
         res.status(500).send({isError: true,Msg: err.message});
