@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const {userRouter} = require("./routes/userRouter")
+const {adminRouter}= require("./routes/adminRouter")
 
 const cors = require("cors");
 const {connection} = require("./configs/db")
@@ -12,7 +13,7 @@ app.use(express.json());
 
 //routes
 app.use("/user",userRouter);
-
+app.use("/admin",adminRouter)
 
 app.get("/",(req,res)=>{
     res.status(201).send({isError:false,Msg:'welcome to server'})

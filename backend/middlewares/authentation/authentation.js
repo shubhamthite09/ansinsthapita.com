@@ -1,6 +1,7 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
+
 const authenticator = (req, res, next) => {
     try{
         const token = req.headers.authorization.split(" ")[1];
@@ -15,6 +16,7 @@ const authenticator = (req, res, next) => {
                 req.body.role = decoded.role;
                 next()
             }
+        
         })
     }catch(err){
         res.status(500).send(err);
